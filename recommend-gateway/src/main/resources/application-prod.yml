@@ -1,0 +1,26 @@
+server:
+  port: 8112
+
+spring:
+  application:
+    name: gateway-service  # Gateway 的服务名
+  cloud:
+    consul:
+      host: localhost  # Consul 地址
+      port: 8500        # Consul 端口
+      discovery:
+        service-name: gateway-service  # 注册服务名
+        health-check-interval: 10s     # 健康检查间隔
+    gateway:
+      routes:
+        - id: user-service-route
+          uri: lb://user-service  # 使用 Consul 自动发现 user-service
+          predicates:
+            - Path=/user/**
+        - id: order-service-route
+          uri: lb://order-service  # 自动发现 order-service
+          predicates:
+            - Path=/order/**
+      discovery:
+        locator:
+          enabled: true  # 启用服务自动发现和路由

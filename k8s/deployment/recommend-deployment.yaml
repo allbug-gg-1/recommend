@@ -1,0 +1,46 @@
+apiVersion: apps/v1  # Kubernetes API 版本，使用 apps/v1 进行部署管理。
+kind: Deployment  # 定义资源类型为 Deployment。
+metadata:
+  name: recommend  # Deployment 的名称，用于标识该服务的部署。
+  labels:
+    app: recommend  # 该标签用于选择器匹配和服务发现。
+
+spec:
+  replicas: 3  # 定义 Pod 副本数量，用于水平扩展。
+  selector:  # 选择器，用于匹配属于此 Deployment 的 Pod。
+    matchLabels:
+      app: recommend  # 匹配标签为 app: service-a 的 Pod。
+
+  template:  # 定义 Pod 模板，指定每个 Pod 的结构。
+    metadata:
+      labels:
+        app: recommend  # Pod 标签，必须与 selector 中的标签匹配。
+
+    spec:
+      containers:  # 定义容器的配置。
+        - name: recommend # 容器名称。
+          image: recommend:latest  # 使用的 Docker 镜像。
+          ports:
+            - containerPort: 8080  # 容器内部开放的端口。
+          env:  # 环境变量配置。
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m"
+          resources:  # 配置资源请求和限制。
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          volumeMounts:  # 挂载卷到容器内。
+            - mountPath: /app/logs
+              name: log-volume
+
+      volumes:  # 定义卷，支持持久化存储。
+        - name: log-volume
+          hostPath:
+            path: /var/log/recommend  # 宿主机的日志路径。
+
+      restartPolicy: Always  # Pod 的重启策略。

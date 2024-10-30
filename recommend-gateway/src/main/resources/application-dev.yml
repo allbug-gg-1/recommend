@@ -1,0 +1,26 @@
+server:
+  port: 8112
+
+spring:
+  application:
+    name: gateway-service  # Gateway 的服务名
+  cloud:
+    consul:
+      host: 127.0.0.1  # Consul 地址
+      port: 8500        # Consul 端口
+      discovery:
+        service-name: gateway-service  # 注册服务名
+        health-check-interval: 10s     # 健康检查间隔
+    gateway:
+      routes:
+        - id: recommend-service-route
+          uri: lb://recommend-service
+          predicates:
+            - Path=/recommend/**
+        - id: test-service-route
+          uri: lb://test-service
+          predicates:
+            - Path=/test/**
+      discovery:
+        locator:
+          enabled: true  # 启用服务自动发现和路由

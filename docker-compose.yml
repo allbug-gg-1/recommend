@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  gate-service:
+    build: ./recommend-gateway
+    ports:
+      - "8112:8080"  # 将主机的8081端口映射到容器的8080端口
+    networks:
+      - app-network
+  recommend-service:
+    build: ./recommend-api
+    ports:
+      - "8111:8080"  # 将主机的8081端口映射到容器的8080端口
+    networks:
+      - app-network
+
+  test-service:
+    build: ./cloud-test
+    ports:
+      - "8222:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge  # 创建一个私有网络，供服务之间通信

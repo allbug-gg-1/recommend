@@ -1,0 +1,58 @@
+server:
+  port: 8111
+
+spring:
+  application:
+    name: recommend
+  datasource:
+    url: jdbc:mysql://192.168.50.12:3306/pet
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+  data:
+    mongodb:
+      uri: mongodb://192.168.50.12:27017/pet
+      auto-index-creation: true
+  redis:
+    source:
+      host: 192.168.50.12
+      port: 6379
+      database: 2
+    target:
+      host: 192.168.50.12
+      port: 6379
+      database: 8
+  kafka:
+    bootstrap-servers: 192.168.50.12:9092
+    consumer:
+      group-id: my-group
+      auto-offset-reset: earliest
+    streams:
+      application-id: my-kafka-streams-app
+      properties:
+        state-dir: /tmp/kafka-streams
+  security:
+    user:
+      name: txt
+      password: 123456
+  cloud:
+    consul:
+      host: 127.0.0.1  # Consul 服务器地址
+      port: 8500
+      discovery:
+        service-name: recommend-service
+        health-check-interval: 10s  # 健康检查间隔
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,metrics
+  endpoint:
+    prometheus:
+      enabled: true
+
