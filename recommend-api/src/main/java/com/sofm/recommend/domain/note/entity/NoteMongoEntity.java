@@ -1,4 +1,4 @@
-package com.sofm.recommend.domain.model.mongo;
+package com.sofm.recommend.domain.note.entity;
 
 import com.sofm.recommend.domain.note.model.Note;
 import jakarta.persistence.Id;

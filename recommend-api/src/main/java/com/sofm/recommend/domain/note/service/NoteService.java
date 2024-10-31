@@ -4,11 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.sofm.recommend.common.utils.BeanUtils;
 import com.sofm.recommend.common.utils.DateUtils;
 import com.sofm.recommend.common.utils.StringUtils;
-import com.sofm.recommend.domain.model.mongo.PNote;
-import com.sofm.recommend.domain.model.mongo.dto.UpdatePNote;
-import com.sofm.recommend.domain.note.entity.Note;
+import com.sofm.recommend.domain.note.dto.UpdateNoteMongoEntity;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.entity.NoteMysqlEntity;
-import com.sofm.recommend.infrastructure.mongo.repository.PNoteRepository;
+import com.sofm.recommend.infrastructure.mongo.repository.NoteMongoRepository;
 import com.sofm.recommend.infrastructure.mysql.repository.NoteRepository;
 import com.sofm.recommend.infrastructure.redis.RedisConstants;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
@@ -36,10 +35,10 @@ public class NoteService {
     private final RedisHelper redisHelper;
     private final NoteRepository noteRepository;
     private final MongoTemplate mongoTemplate;
-    private final PNoteRepository pNoteRepository;
+    private final NoteMongoRepository pNoteRepository;
 
 
-    public NoteService(RedisHelper redisHelper, NoteRepository noteRepository, MongoTemplate mongoTemplate, PNoteRepository pNoteRepository) {
+    public NoteService(RedisHelper redisHelper, NoteRepository noteRepository, MongoTemplate mongoTemplate, NoteMongoRepository pNoteRepository) {
         this.redisHelper = redisHelper;
         this.noteRepository = noteRepository;
         this.mongoTemplate = mongoTemplate;
@@ -57,19 +56,19 @@ public class NoteService {
         return noteRepository.findByLastModifyTimeAfter(lastTime, pageable);
     }
 
-    public Optional<PNote> getPNoteByRecordId(int recordId) {
+    public Optional<NoteMongoEntity> getPNoteByRecordId(int recordId) {
         return pNoteRepository.getByRecordId(recordId);
     }
 
-    public List<PNote> listPNoteByRecordIds(List<Integer> recordIds) {
+    public List<NoteMongoEntity> listPNoteByRecordIds(List<Integer> recordIds) {
         return pNoteRepository.findByRecordIdIn(recordIds);
     }
 
-    public void batchUpsertRecord(List<UpdatePNote> pNotes) {
-        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, PNote.class);
+    public void batchUpsertRecord(List<UpdateNoteMongoEntity> pNotes) {
+        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, NoteMongoEntity.class);
         Map<String, Object> emptyData = new java.util.HashMap<>(Map.of("hotPoint5m", 0, "hotPoint30m", 0, "hotPoint3h", 0, "hotPoint1d", 0, "hotPoint7d", 0));
         emptyData.put("lastInteractionTime", null);
-        for (UpdatePNote pNote : pNotes) {
+        for (UpdateNoteMongoEntity pNote : pNotes) {
             Query query = new Query(Criteria.where("recordId").is(pNote.getRecordId()));
             Update update = new Update();
             Map<String, Object> data = BeanUtils.convertToMap(pNote);
@@ -81,7 +80,7 @@ public class NoteService {
     }
 
     // 随机数据
-    public List<PNote> getRandomNote(int sampleSize) {
+    public List<NoteMongoEntity> getRandomNote(int sampleSize) {
         Date before30 = DateUtils.addDays(new Date(), -30);
         MatchOperation match = Aggregation.match(
                 Criteria.where("visibility").is(true).and("checkType")
@@ -89,26 +88,26 @@ public class NoteService {
         ProjectionOperation project = Aggregation.project("recordId").andExclude("_id");
         AggregationOperation sample = Aggregation.sample(sampleSize);
         Aggregation aggregation = Aggregation.newAggregation(match, sample, project);
-        return mongoTemplate.aggregate(aggregation, "note", PNote.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "note", NoteMongoEntity.class).getMappedResults();
     }
 
-    public List<PNote> getAdoptRandomNote(int sampleSize) {
+    public List<NoteMongoEntity> getAdoptRandomNote(int sampleSize) {
         MatchOperation match = Aggregation.match(Criteria.where("visibility").is(true).and("checkType").is(true).and("status").is("1").and("waitAdopt").is(true));
         ProjectionOperation project = Aggregation.project("recordId").andExclude("_id");
         AggregationOperation sample = Aggregation.sample(sampleSize);
         Aggregation aggregation = Aggregation.newAggregation(match, sample, project);
-        return mongoTemplate.aggregate(aggregation, "note", PNote.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "note", NoteMongoEntity.class).getMappedResults();
     }
 
-    public List<PNote> getTopicRandomNote(List<String> topics, int sampleSize) {
+    public List<NoteMongoEntity> getTopicRandomNote(List<String> topics, int sampleSize) {
         MatchOperation match = Aggregation.match(Criteria.where("visibility").is(true).and("checkType").is(true).and("status").is("1").and("topic").in(topics));
         ProjectionOperation project = Aggregation.project("recordId").andExclude("_id");
         AggregationOperation sample = Aggregation.sample(sampleSize);
         Aggregation aggregation = Aggregation.newAggregation(match, sample, project);
-        return mongoTemplate.aggregate(aggregation, "note", PNote.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "note", NoteMongoEntity.class).getMappedResults();
     }
 
-    public List<PNote> getRegionRandomNote(String province, String city, int sampleSize) {
+    public List<NoteMongoEntity> getRegionRandomNote(String province, String city, int sampleSize) {
         Date beforeDay = DateUtils.addDays(new Date(), -90);
         Criteria criteria = Criteria.where("visibility").is(true).and("checkType").is(true).and("status")
                 .is("1").and("createTime").gte(beforeDay.getTime());
@@ -121,15 +120,15 @@ public class NoteService {
         ProjectionOperation project = Aggregation.project("recordId").andExclude("_id");
         AggregationOperation sample = Aggregation.sample(sampleSize);
         Aggregation aggregation = Aggregation.newAggregation(match, sample, project);
-        return mongoTemplate.aggregate(aggregation, "note", PNote.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "note", NoteMongoEntity.class).getMappedResults();
     }
 
-    public List<PNote> getActivityRandomNote(List<Integer> activityIds, int sampleSize) {
+    public List<NoteMongoEntity> getActivityRandomNote(List<Integer> activityIds, int sampleSize) {
         MatchOperation match = Aggregation.match(Criteria.where("visibility").is(true).and("checkType").is(true).and("status").is("1").and("activityId").in(activityIds));
         ProjectionOperation project = Aggregation.project("recordId").andExclude("_id");
         AggregationOperation sample = Aggregation.sample(sampleSize);
         Aggregation aggregation = Aggregation.newAggregation(match, sample, project);
-        return mongoTemplate.aggregate(aggregation, "note", PNote.class).getMappedResults();
+        return mongoTemplate.aggregate(aggregation, "note", NoteMongoEntity.class).getMappedResults();
     }
 
     public void syncAdItemToRedis(List<Pair<Integer, Long>> recents, List<Integer> disable) {

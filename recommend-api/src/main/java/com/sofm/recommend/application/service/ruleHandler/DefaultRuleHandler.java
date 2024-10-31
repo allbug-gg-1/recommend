@@ -1,6 +1,6 @@
 package com.sofm.recommend.application.service.ruleHandler;
 
-import com.sofm.recommend.domain.model.mongo.PNote;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.service.NoteService;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +39,10 @@ public class DefaultRuleHandler implements RuleHandler {
             if (activityProbability >= 0.5d) {
                 Set<Object> activity = redisHelper.getSetMembers(active_activity);
                 if (!activity.isEmpty()) {
-                    List<PNote> aPNote = noteService.getActivityRandomNote(activity.stream().map(record -> Integer.parseInt(String.valueOf(record))).toList(), 2);
-                    for (PNote pNote : aPNote) {
-                        if (!rankedIds.contains(pNote.getRecordId())) {
-                            rankedIds.add(pNote.getRecordId());
+                    List<NoteMongoEntity> notes = noteService.getActivityRandomNote(activity.stream().map(record -> Integer.parseInt(String.valueOf(record))).toList(), 2);
+                    for (NoteMongoEntity noteMongoEntity : notes) {
+                        if (!rankedIds.contains(noteMongoEntity.getRecordId())) {
+                            rankedIds.add(noteMongoEntity.getRecordId());
                         }
                     }
                 }

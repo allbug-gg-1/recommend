@@ -1,6 +1,6 @@
-package com.sofm.recommend.domain.service;
+package com.sofm.recommend.domain.pet.service;
 
-import com.sofm.recommend.domain.model.mysql.Pet;
+import com.sofm.recommend.domain.pet.entity.Pet;
 import com.sofm.recommend.infrastructure.mysql.repository.PetRepository;
 import com.sofm.recommend.infrastructure.mysql.repository.PetTypeRepository;
 import org.springframework.data.domain.Page;

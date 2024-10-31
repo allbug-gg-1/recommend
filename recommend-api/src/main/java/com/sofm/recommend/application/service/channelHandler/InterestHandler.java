@@ -1,7 +1,7 @@
 package com.sofm.recommend.application.service.channelHandler;
 
 import com.sofm.recommend.common.dto.RecommendContext;
-import com.sofm.recommend.domain.model.mongo.PNote;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.service.NoteService;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class InterestHandler extends AbstractChannelHandler {
             Set<Object> topics = redisHelper.zRange(topicKey, false, false, 0, -1);
             if (!topics.isEmpty()) {
                 List<String> tos = topics.stream().map(String::valueOf).toList();
-                List<PNote> topicRandomNote = noteService.getTopicRandomNote(tos, Math.max(40, size - 20));
+                List<NoteMongoEntity> topicRandomNote = noteService.getTopicRandomNote(tos, Math.max(40, size - 20));
                 return topicRandomNote.stream().map(record -> String.valueOf(record.getRecordId())).toList();
             }
         }
@@ -51,7 +51,7 @@ public class InterestHandler extends AbstractChannelHandler {
         if (redisHelper.hasKey(adopt_user)) {
             Long adoptUser = redisHelper.getRank(adopt_user, String.valueOf(userId));
             if (adoptUser != null) {
-                List<PNote> adoptNotes = noteService.getAdoptRandomNote(20);
+                List<NoteMongoEntity> adoptNotes = noteService.getAdoptRandomNote(20);
                 return adoptNotes.stream().map(record -> String.valueOf(record.getRecordId())).toList();
             }
         }

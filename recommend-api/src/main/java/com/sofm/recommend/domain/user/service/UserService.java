@@ -11,11 +11,11 @@ import com.sofm.recommend.common.dto.MessageDto;
 import com.sofm.recommend.common.dto.UserMab;
 import com.sofm.recommend.common.utils.DateUtils;
 import com.sofm.recommend.common.utils.JSONUtils;
-import com.sofm.recommend.domain.model.mongo.PNote;
-import com.sofm.recommend.domain.model.mongo.RecommendLog;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
+import com.sofm.recommend.domain.recommendLog.entity.RecommendLog;
 import com.sofm.recommend.domain.user.entity.AppUser;
 import com.sofm.recommend.domain.note.service.NoteService;
-import com.sofm.recommend.domain.service.RecommendLogService;
+import com.sofm.recommend.domain.recommendLog.service.RecommendLogService;
 import com.sofm.recommend.infrastructure.mysql.repository.AppUserRepositoryImpl;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class UserService {
 
     public void processInteractiveMsg(MessageDto dto) {
         List<Integer> itemsId = dto.getItemsId().stream().map(Integer::parseInt).toList();
-        List<PNote> pNotes = noteService.listPNoteByRecordIds(itemsId);
+        List<NoteMongoEntity> pNotes = noteService.listPNoteByRecordIds(itemsId);
         Date now = new Date();
         AtomicBoolean adopt = new AtomicBoolean(false);
         Set<String> allTopics = new HashSet<>();

@@ -1,4 +1,4 @@
-package com.sofm.recommend.domain.model.mysql;
+package com.sofm.recommend.domain.pet.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,9 +1,9 @@
-package com.sofm.recommend.domain.service;
+package com.sofm.recommend.domain.recommendLog.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sofm.recommend.common.code.RecommendType;
-import com.sofm.recommend.domain.model.mongo.RecommendLog;
+import com.sofm.recommend.domain.recommendLog.entity.RecommendLog;
 import com.sofm.recommend.infrastructure.mongo.repository.RecommendLogRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

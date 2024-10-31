@@ -1,7 +1,7 @@
 package com.sofm.recommend.application.scheduler;
 
-import com.sofm.recommend.domain.model.mysql.Pet;
-import com.sofm.recommend.domain.service.PetService;
+import com.sofm.recommend.domain.pet.entity.Pet;
+import com.sofm.recommend.domain.pet.service.PetService;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

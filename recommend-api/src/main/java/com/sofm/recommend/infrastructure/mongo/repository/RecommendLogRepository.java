@@ -1,6 +1,6 @@
 package com.sofm.recommend.infrastructure.mongo.repository;
 
-import com.sofm.recommend.domain.model.mongo.RecommendLog;
+import com.sofm.recommend.domain.recommendLog.entity.RecommendLog;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

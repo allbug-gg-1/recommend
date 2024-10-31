@@ -1,6 +1,6 @@
 package com.sofm.recommend.infrastructure.mysql.repository;
 
-import com.sofm.recommend.domain.model.mysql.Pet;
+import com.sofm.recommend.domain.pet.entity.Pet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

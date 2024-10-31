@@ -1,4 +1,4 @@
-package com.sofm.recommend.domain.service;
+package com.sofm.recommend.domain.pet.service;
 
 import com.sofm.recommend.infrastructure.mysql.repository.PetTypeRepository;
 import lombok.extern.slf4j.Slf4j;

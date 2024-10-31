@@ -2,11 +2,10 @@ package com.sofm.recommend.application.scheduler;
 
 import com.sofm.recommend.application.strategy.ScoringStrategy;
 import com.sofm.recommend.common.utils.StringUtils;
-import com.sofm.recommend.domain.model.mongo.dto.UpdatePNote;
-import com.sofm.recommend.domain.note.entity.Note;
+import com.sofm.recommend.domain.note.dto.UpdateNoteMongoEntity;
 import com.sofm.recommend.domain.note.entity.NoteMysqlEntity;
 import com.sofm.recommend.domain.note.service.NoteService;
-import com.sofm.recommend.domain.service.PetService;
+import com.sofm.recommend.domain.pet.service.PetService;
 import com.sofm.recommend.infrastructure.redis.RedisConstants;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,7 @@ public class NoteSyncScheduler {
 
     public void processNote(Date lastTime, int page, int total) {
         Page<NoteMysqlEntity> notes = noteService.loadLastModifyNote(lastTime, page, pageSize);
-        List<UpdatePNote> updates = new ArrayList<>();
+        List<UpdateNoteMongoEntity> updates = new ArrayList<>();
         List<Pair<Integer, Long>> totalRecent = new ArrayList<>();
         List<Integer> disable = new ArrayList<>();
         Map<Integer, List<Pair<Integer, Long>>> userRecent = new HashMap<>();
@@ -73,7 +72,7 @@ public class NoteSyncScheduler {
             if (note.getPetId() > 0) {
                 petType = petService.getTypeByRecordId(note.getPetId());
             }
-            UpdatePNote pNote = new UpdatePNote();
+            UpdateNoteMongoEntity pNote = new UpdateNoteMongoEntity();
             pNote.setRecordId(note.getRecordId());
             pNote.setUid(note.getUid());
             pNote.setPetId(note.getPetId());

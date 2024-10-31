@@ -2,7 +2,7 @@ package com.sofm.recommend.application.service.rankHandler;
 
 import com.sofm.recommend.common.dto.RankedPNote;
 import com.sofm.recommend.common.dto.RecommendContext;
-import com.sofm.recommend.domain.model.mongo.PNote;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.service.NoteService;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class QualityRankHandler extends AbstractRankHandler {
 
 
     public List<Integer> rank(RecommendContext context, List<Integer> items) {
-        List<PNote> pNotes = noteService.listPNoteByRecordIds(items);
+        List<NoteMongoEntity> pNotes = noteService.listPNoteByRecordIds(items);
         if (pNotes.isEmpty()) {
             return List.of();
         }
@@ -36,7 +36,7 @@ public class QualityRankHandler extends AbstractRankHandler {
         List<Integer> unLikeUser = loadUnLikeUser(context.getUserId());
         int user_dislike_weight = 9;
         int pet_dislike_weight = 9;
-        for (PNote pNote : pNotes) {
+        for (NoteMongoEntity pNote : pNotes) {
             int userFrequency = Collections.frequency(unLikeUser, pNote.getUid());
             if (userFrequency >= 1) {
                 user_dislike_weight = Math.max(0, user_dislike_weight - userFrequency * 3);

@@ -14,7 +14,7 @@ import com.sofm.recommend.common.status.ResponseStatus;
 import com.sofm.recommend.common.utils.DateUtils;
 import com.sofm.recommend.common.utils.JSONUtils;
 import com.sofm.recommend.domain.user.entity.AppUser;
-import com.sofm.recommend.domain.service.RecommendLogService;
+import com.sofm.recommend.domain.recommendLog.service.RecommendLogService;
 import com.sofm.recommend.domain.user.service.UserService;
 import com.sofm.recommend.infrastructure.geo.GeoIPService;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;

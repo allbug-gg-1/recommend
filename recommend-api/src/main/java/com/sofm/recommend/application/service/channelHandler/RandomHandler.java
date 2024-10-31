@@ -3,7 +3,7 @@ package com.sofm.recommend.application.service.channelHandler;
 import com.sofm.recommend.application.config.UserMabWeightConfig;
 import com.sofm.recommend.common.code.RecommendType;
 import com.sofm.recommend.common.dto.RecommendContext;
-import com.sofm.recommend.domain.model.mongo.PNote;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.service.NoteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class RandomHandler extends AbstractChannelHandler {
     @Override
     public List<String> load(RecommendContext context, int startPos) {
         int size = loadSize(context);
-        List<PNote> notes = noteService.getRandomNote(size);
+        List<NoteMongoEntity> notes = noteService.getRandomNote(size);
         return notes.stream().map(record -> String.valueOf(record.getRecordId())).toList();
     }
 

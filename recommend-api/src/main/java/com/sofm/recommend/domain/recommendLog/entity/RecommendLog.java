@@ -1,4 +1,4 @@
-package com.sofm.recommend.domain.model.mongo;
+package com.sofm.recommend.domain.recommendLog.entity;
 
 import jakarta.persistence.Id;
 import lombok.Data;
