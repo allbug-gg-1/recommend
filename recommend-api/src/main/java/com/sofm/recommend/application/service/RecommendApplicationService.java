@@ -1,7 +1,7 @@
 package com.sofm.recommend.application.service;
 
 import com.sofm.recommend.application.exception.ServiceException;
-import com.sofm.recommend.application.service.channelHandler.ChannelHandler;
+import com.sofm.recommend.application.service.modeHandler.ModeHandler;
 import com.sofm.recommend.application.service.rankHandler.RankHandler;
 import com.sofm.recommend.application.service.ruleHandler.DefaultRuleHandler;
 import com.sofm.recommend.common.code.RecommendType;
@@ -13,8 +13,8 @@ import com.sofm.recommend.common.dto.UserMab;
 import com.sofm.recommend.common.status.ResponseStatus;
 import com.sofm.recommend.common.utils.DateUtils;
 import com.sofm.recommend.common.utils.JSONUtils;
-import com.sofm.recommend.domain.user.entity.AppUser;
 import com.sofm.recommend.domain.recommendLog.service.RecommendLogService;
+import com.sofm.recommend.domain.user.entity.AppUser;
 import com.sofm.recommend.domain.user.service.UserService;
 import com.sofm.recommend.infrastructure.geo.GeoIPService;
 import com.sofm.recommend.infrastructure.redis.RedisHelper;
@@ -27,9 +27,8 @@ import static com.sofm.recommend.infrastructure.redis.RedisConstants.*;
 
 @Service
 public class RecommendApplicationService {
-
     private final RedisHelper redisHelper;
-    private final Map<String, ChannelHandler> channelHandlers;
+    private final Map<String, ModeHandler> modeHandlers;
     private final Map<String, RankHandler> rankHandlers;
     private final UserService userService;
     private final DefaultRuleHandler ruleHandler;
@@ -37,9 +36,9 @@ public class RecommendApplicationService {
     private final RecommendLogService recommendLogService;
     private final Random random = new Random();
 
-    public RecommendApplicationService(RedisHelper redisHelper, Map<String, ChannelHandler> channelHandlers, Map<String, RankHandler> rankHandlers, UserService userService, DefaultRuleHandler ruleHandler, GeoIPService geoIPService, RecommendLogService recommendLogService) {
+    public RecommendApplicationService(RedisHelper redisHelper, Map<String, ModeHandler> modeHandlers, Map<String, RankHandler> rankHandlers, UserService userService, DefaultRuleHandler ruleHandler, GeoIPService geoIPService, RecommendLogService recommendLogService) {
         this.redisHelper = redisHelper;
-        this.channelHandlers = channelHandlers;
+        this.modeHandlers = modeHandlers;
         this.rankHandlers = rankHandlers;
         this.userService = userService;
         this.ruleHandler = ruleHandler;
@@ -55,25 +54,19 @@ public class RecommendApplicationService {
         ProvinceCityDto provinceCityDto = geoIPService.getLocationByIP(request.getIp());
         Map<String, Set<String>> channelItems = new HashMap<>();
         RecommendContext context = new RecommendContext(appUser.getRecordId(), request.getIp(), provinceCityDto);
+        RecommendType recommendType;
         if (!request.isNear_by()) {
-            UserMab userMab;
             if (random.nextDouble() < Constants.EPSILON_RATE) { // 探索
-                context.setRecommendType(RecommendType.Random);
+                recommendType = RecommendType.Explore;
             } else {  // 利用
-                String userMabKey = user_mab.replace("{user_id}", String.valueOf(context.getUserId()));
-                if (redisHelper.hasKey(userMabKey)) {
-                    String userMabStr = (String) redisHelper.getValue(userMabKey);
-                    userMab = JSONUtils.fromJson(userMabStr, UserMab.class);
-                } else {
-                    userMab = new UserMab();
-                }
-                context.setUserMab(userMab);
-                context.setRecommendType(RecommendType.Random);
+                recommendType = RecommendType.Exploit;
+                loadUserMab(context);
             }
         } else {
-            context.setRecommendType(RecommendType.NearBy);
+            recommendType = RecommendType.NearBy;
         }
-        dynamicRecall(context, channelItems, 0, 200);
+        context.setRecommendType(recommendType);
+        dynamicRecall(context, channelItems, 0);
         List<Integer> results = filterWatched(context, channelItems);
         results = qualityRank(context, results);
         results = cacheRankResults(context.getUserId(), results);
@@ -82,35 +75,19 @@ public class RecommendApplicationService {
         return RecommendResult.of(logId, results);
     }
 
-    public void dynamicRecall(RecommendContext context, Map<String, Set<String>> channelItems, int loadTime, int minItemCount) {
+    public void dynamicRecall(RecommendContext context, Map<String, Set<String>> channelItems, int loadTime) {
         int totalCount = 0;
-        if (context.getRecommendType() == RecommendType.NearBy) {
-            ChannelHandler regionHandler = channelHandlers.get("regionHandler");
-            List<String> channelResults = regionHandler.load(context, loadTime);
-            Set<String> items = new HashSet<>(channelResults);
-            channelItems.put("region", items);
-            totalCount += items.size();
-        } else if (context.getRecommendType() == RecommendType.Random) {
-            ChannelHandler regionHandler = channelHandlers.get("randomHandler");
-            List<String> channelResults = regionHandler.load(context, loadTime);
-            Set<String> items = new HashSet<>(channelResults);
-            channelItems.put("random", items);
-            totalCount += items.size();
-        } else {
-            for (String handlerKey : channelHandlers.keySet()) {
-                ChannelHandler handler = channelHandlers.get(handlerKey);
-                String key = handlerKey.replace("Handler", "");
-                Set<String> items = channelItems.getOrDefault(key, new HashSet<>());
-                List<String> channelResults = handler.load(context, loadTime);
-                items.addAll(channelResults);
-                channelItems.put(key, items);
-                totalCount += items.size();
+        for (Map.Entry<String, ModeHandler> modeHandlerEntry : modeHandlers.entrySet()) {
+            ModeHandler modeHandler = modeHandlerEntry.getValue();
+            if (modeHandler.getRecommendType() == context.getRecommendType()) {
+                int size = modeHandler.recall(context, channelItems, loadTime);
+                totalCount += size;
             }
         }
-        if (totalCount < minItemCount) {
+        if (totalCount < Constants.minRecommendRecallCount) {
             if (loadTime <= 2) {
                 loadTime++;
-                dynamicRecall(context, channelItems, loadTime, minItemCount);
+                dynamicRecall(context, channelItems, loadTime);
             }
         }
     }
@@ -169,5 +146,17 @@ public class RecommendApplicationService {
         }
         recommendLogService.saveRecommendLog(uuid.toString(), context.getUserId(), context.getRecommendType(), channelItems);
         return uuid.toString();
+    }
+
+    public void loadUserMab(RecommendContext context) {
+        UserMab userMab;
+        String userMabKey = user_mab.replace("{user_id}", String.valueOf(context.getUserId()));
+        if (redisHelper.hasKey(userMabKey)) {
+            String userMabStr = (String) redisHelper.getValue(userMabKey);
+            userMab = JSONUtils.fromJson(userMabStr, UserMab.class);
+        } else {
+            userMab = new UserMab();
+        }
+        context.setUserMab(userMab);
     }
 }

@@ -152,7 +152,7 @@ public class UserService {
         if (log == null) {
             return;
         }
-        if (log.getRecommendType() != RecommendType.Normal.getCode()) {
+        if (log.getRecommendType() != RecommendType.Exploit.getCode()) {
             return;
         }
         Map<String, Set<String>> channelItems = log.getChannelItem();

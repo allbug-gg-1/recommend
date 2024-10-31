@@ -81,7 +81,7 @@ public class NoteService {
 
     // 随机数据
     public List<NoteMongoEntity> getRandomNote(int sampleSize) {
-        Date before30 = DateUtils.addDays(new Date(), -30);
+        Date before30 = DateUtils.addDays(new Date(), -90);
         MatchOperation match = Aggregation.match(
                 Criteria.where("visibility").is(true).and("checkType")
                         .is(true).and("status").is("1").and("createTime").gte(before30.getTime()));

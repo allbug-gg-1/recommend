@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -46,8 +45,10 @@ public class KafkaConfig {
     private String applicationId;
 
 
+
     private final KafkaMessageHandler kafkaMessageHandler;
     private final KafkaStreamsService kafkaStreamsService;
+
 
     public KafkaConfig(KafkaMessageHandler kafkaMessageHandler, KafkaStreamsService kafkaStreamsService) {
         this.kafkaMessageHandler = kafkaMessageHandler;

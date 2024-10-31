@@ -27,7 +27,7 @@ public class RandomHandler extends AbstractChannelHandler {
 
     @Override
     public double loadChannelWeight(RecommendContext context) {
-        if (context.getRecommendType() == RecommendType.Random) {
+        if (context.getRecommendType() == RecommendType.Explore) {
             return UserMabWeightConfig.getOnlyRandomWeight();
         } else {
             return context.getUserMab().getRegion();
