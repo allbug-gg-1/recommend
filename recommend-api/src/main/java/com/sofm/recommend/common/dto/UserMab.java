@@ -8,13 +8,13 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 public class UserMab {
-    private double hot = 0d;
-    private double cache = 0d;
-    private double random = 0d;
-    private double region = 0d;
-    private double social = 0d;
-    private double news = 0d;
-    private double interest = 0d;
+    private double hot;
+    private double cache;
+    private double random;
+    private double region;
+    private double social;
+    private double news;
+    private double interest;
 
     public UserMab() {
         this.hot = UserMabWeightConfig.DEFAULT_HOT_WEIGHT;
@@ -24,12 +24,6 @@ public class UserMab {
         this.news = UserMabWeightConfig.DEFAULT_NEWS_WEIGHT;
         this.interest = UserMabWeightConfig.DEFAULT_INTEREST_WEIGHT;
         this.random = UserMabWeightConfig.DEFAULT_RANDOM_WEIGHT;
-    }
-
-    public static UserMab EpslionUserMab() {
-        UserMab userMab = new UserMab();
-        userMab.setRandom(UserMabWeightConfig.DEFAULT_RANDOM_WEIGHT);
-        return userMab;
     }
 
     public double getChannelWeight(String channel) {
