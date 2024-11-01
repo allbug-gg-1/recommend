@@ -6,7 +6,7 @@ spring:
     name: gateway-service  # Gateway 的服务名
   cloud:
     consul:
-      host: localhost  # Consul 地址
+      host: consul  # Consul 地址
       port: 8500       # Consul 端口
       discovery:
         service-name:  gateway-service # Consul 服务的名称

@@ -6,7 +6,7 @@ spring:
     name: test
   cloud:
     consul:
-      host: 127.0.0.1  # Consul 服务器地址
+      host: localhost  # Consul 服务器地址
       port: 8500
       discovery:
         service-name: test-service

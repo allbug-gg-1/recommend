@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: recommend
+    name: recommend-service
   datasource:
     url: jdbc:mysql://192.168.50.12:3306/pet
     username: root
@@ -42,11 +42,13 @@ spring:
       password: 123456
   cloud:
     consul:
-      host: 127.0.0.1  # Consul 服务器地址
+      host: consul  # Consul 服务器地址
       port: 8500
       discovery:
         service-name: recommend-service
+        instance-id: recommend-service-${random.value}
         health-check-interval: 10s  # 健康检查间隔
+
 management:
   endpoints:
     web:
@@ -55,4 +57,5 @@ management:
   endpoint:
     prometheus:
       enabled: true
+
 
