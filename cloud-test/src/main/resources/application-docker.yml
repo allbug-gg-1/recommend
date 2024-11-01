@@ -1,0 +1,29 @@
+server:
+  port: 8222
+
+spring:
+  application:
+    name: test-service
+  cloud:
+    consul:
+      host: consul  # Consul 服务器地址
+      port: 8500
+      discovery:
+        service-name: test-service
+        instance-id: test-service-${random.value}
+        health-check-interval: 10s  # 健康检查间隔
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+dubbo:
+  consumer:
+    check: false
+    timeout: 5000
+  protocol:
+    port: 30010
+    name: dubbo
+  registry:
+    address: consul://consul:8500  # 使用 Consul 作为注册中心
+

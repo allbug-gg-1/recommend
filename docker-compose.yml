@@ -25,6 +25,35 @@ services:
       - app-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+  test-service:
+    build: ./cloud-test
+    ports:
+      - "8222:8222"  # 将主机的8081端口映射到容器的8080端口
+    networks:
+      - app-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  
+#  prometheus:
+#    image: prom/prometheus
+#    container_name: prometheus
+#    volumes:
+#      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Prometheus 配置文件挂载
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - app-network
+#
+#  grafana:
+#    image: grafana/grafana
+#    container_name: grafana
+#    ports:
+#      - "3000:3000"  # Grafana UI 访问端口
+#    environment:
+#      - GF_SECURITY_ADMIN_PASSWORD=admin  # 设置默认管理员密码
+#    networks:
+#      - app-network
+
 networks:
   app-network:
     driver: bridge  # 创建一个私有网络，供服务之间通信
