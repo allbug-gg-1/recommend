@@ -12,6 +12,15 @@ services:
       - app-network
     volumes:
       - shared_data:/consul/data
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - shared_data:/mongo/db
+    networks:
+      - app-network
   gate-service:
     build: ./recommend-gateway
     ports:

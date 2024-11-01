@@ -16,7 +16,7 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
   data:
     mongodb:
-      uri: mongodb://192.168.50.12:27017/pet
+      uri: mongodb://mongo:27017/pet
       auto-index-creation: true
   redis:
     source:

@@ -43,11 +43,4 @@ public class NoteMongoEntity extends Note {
     private Date createTime;
     private Date lastModifyTime;
     private double qualityPoint;
-    private int hotPoint5m;
-    private int hotPoint30m;
-    private int hotPoint3h;
-    private int hotPoint1d;
-    private int hotPoint7d;
-    @Indexed
-    private Date lastInteractionTime;
 }
