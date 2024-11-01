@@ -17,13 +17,3 @@ management:
     web:
       exposure:
         include: health
-dubbo:
-  consumer:
-    check: false
-    timeout: 5000
-  protocol:
-    port: 30010
-    name: dubbo
-  registry:
-    address: consul://consul:8500  # 使用 Consul 作为注册中心
-

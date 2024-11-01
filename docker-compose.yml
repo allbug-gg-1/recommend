@@ -1,5 +1,6 @@
 version: '3.9'
 
+
 services:
   consul:
     image: hashicorp/consul:1.16.2
@@ -9,31 +10,42 @@ services:
     command: agent -dev -client=0.0.0.0 -bind=0.0.0.0
     networks:
       - app-network
+    volumes:
+      - shared_data:/consul/data
   gate-service:
     build: ./recommend-gateway
     ports:
       - "8112:8112"  # 将主机的8081端口映射到容器的8080端口
     networks:
       - app-network
+    volumes:
+      - shared_data:/gate/data
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - TZ=Asia/Shanghai
   api-service:
     build: ./recommend-api
     ports:
-      - "8111:8111"  # 将主机的8081端口映射到容器的8080端口
+      - "8111:8111"  # 左边是主机端口 右边是容器端口
     networks:
       - app-network
+    volumes:
+      - shared_data:/api/data
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - TZ=Asia/Shanghai
   test-service:
     build: ./cloud-test
     ports:
-      - "8222:8222"  # 将主机的8081端口映射到容器的8080端口
+      - "8222:8222"
     networks:
       - app-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-  
+      - TZ=Asia/Shanghai
+    volumes:
+      - shared_data:/test/data
+
 #  prometheus:
 #    image: prom/prometheus
 #    container_name: prometheus
@@ -57,3 +69,13 @@ services:
 networks:
   app-network:
     driver: bridge  # 创建一个私有网络，供服务之间通信
+
+volumes:
+  shared_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/HIKSEMI/docker-recommend
+
+
