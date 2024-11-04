@@ -18,6 +18,16 @@ services:
       - mongo_data:/data/db
     networks:
       - app-network
+  redis:
+    image: redislabs/rebloom:latest  # 使用带 RedisBloom 的官方镜像
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--loadmodule", "/usr/lib/redis/modules/redisbloom.so" ]
   gate-service:
     build: ./recommend-gateway
     ports:
@@ -42,8 +52,6 @@ services:
       - TZ=Asia/Shanghai
   test-service:
     build: ./cloud-test
-    ports:
-      - "8222:8222"
     networks:
       - app-network
     environment:
@@ -99,4 +107,10 @@ volumes:
       type: none
       o: bind
       device: /Volumes/HIKSEMI/docker-recommend/mongo
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/HIKSEMI/docker-recommend/redis
 

@@ -9,10 +9,13 @@ spring:
       host: localhost  # Consul 地址
       port: 8500       # Consul 端口
       discovery:
-        service-name:  gateway-service # Consul 服务的名称
+        service-name: gateway-service # Consul 服务的名称
         instance-id: gateway-service-${random.value}
         health-check-interval: 10s     # 健康检查间隔
     gateway:
+      httpclient:
+        connect-timeout: 5000  # 设置连接超时为 5 秒
+        response-timeout: 30000  # 设置响应超时为 30 秒
       routes:
         - id: recommend-service-route
           uri: lb://recommend-service

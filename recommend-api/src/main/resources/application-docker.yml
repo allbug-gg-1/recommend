@@ -24,7 +24,7 @@ spring:
       port: 6379
       database: 2
     target:
-      host: 192.168.50.12
+      host: redis
       port: 6379
       database: 8
   kafka:
