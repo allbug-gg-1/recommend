@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
     volumes:
-      - shared_data:/consul/data
+      - consul_data:/consul/data
   mongo:
     image: mongo:6.0
     ports:
@@ -28,7 +28,7 @@ services:
     networks:
       - app-network
     volumes:
-      - shared_data:/gate/data
+      - gate_data:/app/recommend-gateway/logs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - TZ=Asia/Shanghai
@@ -39,7 +39,7 @@ services:
     networks:
       - app-network
     volumes:
-      - shared_data:/api/data
+      - api_data:/app/recommend-gateway/logs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - TZ=Asia/Shanghai
@@ -52,8 +52,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - TZ=Asia/Shanghai
-    volumes:
-      - shared_data:/test/data
 
 #  prometheus:
 #    image: prom/prometheus
@@ -80,12 +78,24 @@ networks:
     driver: bridge  # 创建一个私有网络，供服务之间通信
 
 volumes:
-  shared_data:
+  gate_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /Volumes/HIKSEMI/docker-recommend
+      device: /Volumes/HIKSEMI/docker-recommend/gate
+  api_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/HIKSEMI/docker-recommend/api
+  consul_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/HIKSEMI/docker-recommend/consul
   mongo_data:
     driver: local
     driver_opts:
