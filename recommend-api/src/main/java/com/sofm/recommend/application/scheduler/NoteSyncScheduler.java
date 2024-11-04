@@ -41,21 +41,26 @@ public class NoteSyncScheduler {
             return;
         }
         isStart = true;
-        Date lastTime;
-        Date now = new Date();
-        if (redisHelper.hasKey(RedisConstants.note_sync_time)) {
-            String lastTimeStr = (String) redisHelper.getValue(RedisConstants.note_sync_time);
-            lastTime = new Date(Long.parseLong(lastTimeStr));
-        } else {
-            lastTime = new Date(0);
+        try {
+            Date lastTime;
+            Date now = new Date();
+            if (redisHelper.hasKey(RedisConstants.note_sync_time)) {
+                String lastTimeStr = (String) redisHelper.getValue(RedisConstants.note_sync_time);
+                lastTime = new Date(Long.parseLong(lastTimeStr));
+            } else {
+                lastTime = new Date(0);
+            }
+            int total = noteService.countLastModifyNote(lastTime);
+            if (total > 0) {
+                log.info("note count:{} to sync", total);
+                processNote(lastTime, 1, total);
+            }
+            redisHelper.setValue(RedisConstants.note_sync_time, String.valueOf(now.getTime()));
+        } catch (Exception e) {
+            log.error("note sync error:{}", e.getMessage());
+        } finally {
+            isStart = false;
         }
-        int total = noteService.countLastModifyNote(lastTime);
-        if (total > 0) {
-            log.info("note count:{} to sync", total);
-            processNote(lastTime, 1, total);
-        }
-        redisHelper.setValue(RedisConstants.note_sync_time, String.valueOf(now.getTime()));
-        isStart = false;
     }
 
     public void processNote(Date lastTime, int page, int total) {

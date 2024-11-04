@@ -1,6 +1,4 @@
 version: '3.9'
-
-
 services:
   consul:
     image: hashicorp/consul:1.16.2
@@ -20,7 +18,6 @@ services:
       - mongo_data:/data/db
     networks:
       - app-network
-    user: "1001:1001"  # 使用非 root 用户的 UID 和 GID
   gate-service:
     build: ./recommend-gateway
     ports:
@@ -39,7 +36,7 @@ services:
     networks:
       - app-network
     volumes:
-      - api_data:/app/recommend-gateway/logs
+      - api_data:/app/recommend-api/logs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - TZ=Asia/Shanghai
@@ -101,5 +98,5 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /Volumes/HIKSEMI/mongo
+      device: /Volumes/HIKSEMI/docker-recommend/mongo
 
