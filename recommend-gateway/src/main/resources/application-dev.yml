@@ -25,3 +25,11 @@ spring:
       discovery:
         locator:
           enabled: true  # 启用服务自动发现和路由
+logging:
+  level:
+    root: INFO              # 设置默认日志级别
+  file:
+    path: ./logs            # 日志文件的存储路径
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"  # 控制台输出格式
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" # 文件输出格式

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.sofm.recommend.common.utils.BeanUtils;
 import com.sofm.recommend.common.utils.DateUtils;
 import com.sofm.recommend.common.utils.StringUtils;
-import com.sofm.recommend.domain.note.dto.UpdateNoteMongoEntity;
 import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.entity.NoteMysqlEntity;
 import com.sofm.recommend.infrastructure.mongo.repository.NoteMongoRepository;
@@ -64,16 +63,13 @@ public class NoteService {
         return pNoteRepository.findByRecordIdIn(recordIds);
     }
 
-    public void batchUpsertRecord(List<UpdateNoteMongoEntity> pNotes) {
+    public void batchUpsertRecord(List<NoteMongoEntity> updateNotes) {
         BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, NoteMongoEntity.class);
-        Map<String, Object> emptyData = new java.util.HashMap<>(Map.of("hotPoint5m", 0, "hotPoint30m", 0, "hotPoint3h", 0, "hotPoint1d", 0, "hotPoint7d", 0));
-        emptyData.put("lastInteractionTime", null);
-        for (UpdateNoteMongoEntity pNote : pNotes) {
-            Query query = new Query(Criteria.where("recordId").is(pNote.getRecordId()));
+        for (NoteMongoEntity updateNote : updateNotes) {
+            Query query = new Query(Criteria.where("recordId").is(updateNote.getRecordId()));
             Update update = new Update();
-            Map<String, Object> data = BeanUtils.convertToMap(pNote);
+            Map<String, Object> data = BeanUtils.convertToMap(updateNote);
             data.forEach(update::set);
-            emptyData.forEach(update::setOnInsert);
             bulkOps.upsert(query, update);
         }
         bulkOps.execute();

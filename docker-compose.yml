@@ -14,13 +14,13 @@ services:
       - shared_data:/consul/data
   mongo:
     image: mongo:6.0
-    container_name: mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
     networks:
       - app-network
+    user: "1001:1001"  # 使用非 root 用户的 UID 和 GID
   gate-service:
     build: ./recommend-gateway
     ports:

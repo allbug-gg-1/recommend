@@ -1,0 +1,1 @@
+sudo chown -R 1001:1001 /Volumes/HIKSEMI/mongo  // 需要分配一个非root的用户和用户组给到mongo

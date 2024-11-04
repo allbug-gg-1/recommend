@@ -2,7 +2,7 @@ package com.sofm.recommend.application.scheduler;
 
 import com.sofm.recommend.application.strategy.ScoringStrategy;
 import com.sofm.recommend.common.utils.StringUtils;
-import com.sofm.recommend.domain.note.dto.UpdateNoteMongoEntity;
+import com.sofm.recommend.domain.note.entity.NoteMongoEntity;
 import com.sofm.recommend.domain.note.entity.NoteMysqlEntity;
 import com.sofm.recommend.domain.note.service.NoteService;
 import com.sofm.recommend.domain.pet.service.PetService;
@@ -60,7 +60,7 @@ public class NoteSyncScheduler {
 
     public void processNote(Date lastTime, int page, int total) {
         Page<NoteMysqlEntity> notes = noteService.loadLastModifyNote(lastTime, page, pageSize);
-        List<UpdateNoteMongoEntity> updates = new ArrayList<>();
+        List<NoteMongoEntity> updates = new ArrayList<>();
         List<Pair<Integer, Long>> totalRecent = new ArrayList<>();
         List<Integer> disable = new ArrayList<>();
         Map<Integer, List<Pair<Integer, Long>>> userRecent = new HashMap<>();
@@ -72,7 +72,7 @@ public class NoteSyncScheduler {
             if (note.getPetId() > 0) {
                 petType = petService.getTypeByRecordId(note.getPetId());
             }
-            UpdateNoteMongoEntity pNote = new UpdateNoteMongoEntity();
+            NoteMongoEntity pNote = new NoteMongoEntity();
             pNote.setRecordId(note.getRecordId());
             pNote.setUid(note.getUid());
             pNote.setPetId(note.getPetId());
