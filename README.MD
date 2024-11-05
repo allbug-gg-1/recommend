@@ -1,1 +1,1 @@
-sudo chown -R 1001:1001 /Volumes/HIKSEMI/mongo  // 需要分配一个非root的用户和用户组给到mongo
+sudo chown -R 999:999 /Volumes/HIKSEMI/docker-recommend/mongo  // 对应docker-compose.yml中 mongo的uid gid 避免每次启动的权限问题

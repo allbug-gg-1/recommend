@@ -12,6 +12,7 @@ services:
       - consul_data:/consul/data
   mongo:
     image: mongo:6.0
+    user: "999:999"  # 确保MongoDB容器以合适的用户身份运行
     ports:
       - "27017:27017"
     volumes:
