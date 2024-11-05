@@ -12,6 +12,7 @@ spring:
         service-name: gateway-service # Consul 服务的名称
         instance-id: gateway-service-${random.value}
         health-check-interval: 10s     # 健康检查间隔
+        health-check-critical-timeout: 1m # 设置 deregister_critical_service_after 参数，时间可按需调整
     gateway:
       httpclient:
         connect-timeout: 5000  # 设置连接超时为 5 秒

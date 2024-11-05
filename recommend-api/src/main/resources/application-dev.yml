@@ -48,7 +48,7 @@ spring:
         service-name: recommend-service
         instance-id: recommend-service-${random.value}
         health-check-interval: 10s  # 健康检查间隔
-
+        health-check-critical-timeout: 1m # 设置 deregister_critical_service_after 参数，时间可按需调整
 management:
   endpoints:
     web:
