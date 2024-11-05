@@ -16,6 +16,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+      - mongo_config_data:/data/configdb
     networks:
       - app-network
   redis:
@@ -106,7 +107,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /Volumes/HIKSEMI/docker-recommend/mongo
+      device: /Volumes/HIKSEMI/docker-recommend/mongo/data
+  mongo_config_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Volumes/HIKSEMI/docker-recommend/mongo/config
   redis_data:
     driver: local
     driver_opts:
