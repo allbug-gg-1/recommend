@@ -5,7 +5,7 @@ services:
     ports:
       - "8500:8500"      # Consul UI 访问端口
       - "8600:8600/udp"  # DNS 查询端口
-    command: agent -dev -client=0.0.0.0 -bind=0.0.0.0
+    command: agent -server -client=0.0.0.0 -bind=0.0.0.0 -data-dir=/consul/data -ui -bootstrap-expect=1
     networks:
       - app-network
     volumes:
@@ -22,7 +22,6 @@ services:
       - app-network
   redis:
     image: redislabs/rebloom:latest  # 使用带 RedisBloom 的官方镜像
-    container_name: redis
     ports:
       - "6379:6379"
     networks:
@@ -43,8 +42,6 @@ services:
       - TZ=Asia/Shanghai
   api-service:
     build: ./recommend-api
-    ports:
-      - "8111:8111"  # 左边是主机端口 右边是容器端口
     networks:
       - app-network
     volumes:
@@ -121,4 +118,3 @@ volumes:
       type: none
       o: bind
       device: /Volumes/HIKSEMI/docker-recommend/redis
-
